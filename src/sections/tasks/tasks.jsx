@@ -13,7 +13,7 @@ const TaskList = styled.div`
   min-height: 100px;
   display: flex;
   flex-direction: column;
-  background: #f3f3f3;
+  background: rgba(145, 158, 171, 0.12);
   min-width: 341px;
   border-radius: 5px;
   padding: 15px 15px;

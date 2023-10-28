@@ -42,6 +42,11 @@ const navConfig = [
     path: '/tasks',
     icon: icon('ic_disabled'),
   },
+  {
+    title: 'Projects',
+    path: '/projects',
+    icon: icon('ic_disabled'),
+  },
 ];
 
 export default navConfig;
