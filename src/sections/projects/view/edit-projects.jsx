@@ -1,5 +1,5 @@
-import React from 'react';
 import axios from 'axios';
+import React, { useEffect } from 'react';
 
 import { alpha } from '@mui/material/styles';
 import {
@@ -14,26 +14,28 @@ import {
 } from '@mui/material';
 
 export default function EditProjects() {
-  const [selectedRole, setSelectedRole] = React.useState('Role');
-  const [userData, setUserData] = React.useState({
-    userName: '',
-    email: '',
-    password: '',
+  const [selectedManager, setSelectedManager] = React.useState('Role');
+  const [projectData, setProjectData] = React.useState({
+    projectName: '',
+    description: '',
+    technology: '',
   });
+  const [managers, setManagers] = React.useState([]);
 
   const handleChange = (event) => {
-    setSelectedRole(event.target.value);
+    setSelectedManager(event.target.value);
   };
 
-  console.log('userdata-------------', userData);
+  console.log('projectData-------------', projectData);
 
-  const createUser = () => {
+  const createProject = () => {
     axios
-      .post('http://localhost:4000/users/create-user', {
-        userName: userData.userName,
-        email: userData.email,
-        password: userData.password,
-        role: selectedRole,
+      .post('http://localhost:4000/projects/create-project', {
+        projectName: projectData.projectName,
+        description: projectData.description,
+        technology: projectData.technology,
+        createdBy: '653cd9b18fb2ee68155e15e9',
+        assignedTo: selectedManager,
       })
       .then((response) => {
         console.log(response);
@@ -42,6 +44,22 @@ export default function EditProjects() {
         console.log(error);
       });
   };
+
+  const getManagers = () => {
+    axios
+      .get('http://localhost:4000/users/all/manager')
+      .then((response) => {
+        console.log(response);
+        setManagers(response?.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getManagers();
+  }, []);
 
   return (
     <Container>
@@ -64,19 +82,19 @@ export default function EditProjects() {
           <TextField
             sx={{ minWidth: 300, my: 2, mx: 2 }}
             id="outlined-basic"
-            label="User Name"
+            label="Project Name"
             variant="outlined"
             onChange={(e) => {
-              setUserData({ ...userData, userName: e.target.value });
+              setProjectData({ ...projectData, projectName: e.target.value });
             }}
           />
           <TextField
             sx={{ minWidth: 300, my: 2, mx: 2 }}
             id="outlined-basic"
-            label="Email"
+            label="Description"
             variant="outlined"
             onChange={(e) => {
-              setUserData({ ...userData, email: e.target.value });
+              setProjectData({ ...projectData, description: e.target.value });
             }}
           />
         </Box>
@@ -87,20 +105,20 @@ export default function EditProjects() {
             label="Password"
             variant="outlined"
             onChange={(e) => {
-              setUserData({ ...userData, password: e.target.value });
+              setProjectData({ ...projectData, technology: e.target.value });
             }}
           />
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={selectedRole}
-            label="Role"
+            value={selectedManager}
+            label="Manager"
             onChange={handleChange}
             sx={{ minWidth: 300, my: 2, mx: 2 }}
           >
-            <MenuItem value="admin">Admin</MenuItem>
-            <MenuItem value="manager">Manager</MenuItem>
-            <MenuItem value="developer">Developer</MenuItem>
+            {managers.map((item, index) => (
+              <MenuItem value={item?._id}>{item.userName}</MenuItem>
+            ))}
           </Select>
         </Box>
         <Button
@@ -108,7 +126,7 @@ export default function EditProjects() {
           color="inherit"
           // startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={() => {
-            createUser();
+            createProject();
           }}
           sx={{ minWidth: 300, my: 2, mx: 2 }}
         >
