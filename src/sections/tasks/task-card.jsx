@@ -1,10 +1,8 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { Draggable } from 'react-beautiful-dnd';
-// import CustomAvatar from '../TableComponents/CustomAvatar'
-// import { ReactComponent as RedArrow } from '../../assets/icons/High.svg'
-// import { ReactComponent as YellowArrow } from '../../assets/icons/Medium.svg'
-// import { ReactComponent as BlueArrow } from '../../assets/icons/Low.svg'
+
+import { Card } from '@mui/material';
 
 const TaskInformation = styled.div`
   display: flex;
@@ -16,7 +14,7 @@ const TaskInformation = styled.div`
   border-radius: 5px;
   max-width: 311px;
   /* background: ${({ isDragging }) => (isDragging ? 'rgba(255, 59, 59, 0.15)' : 'white')}; */
-  background: white;
+  ${'' /* background: white; */}
   margin-top: 15px;
 
   .secondary-details {
@@ -43,7 +41,18 @@ const TaskInformation = styled.div`
 const TaskCard = ({ item, index }) => (
   <Draggable key={item.id} draggableId={item.id} index={index}>
     {(provided) => (
-      <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+      <Card
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        sx={{
+          my: 1,
+          borderRadius: 1.5,
+          boxShadow: 20,
+          backdropFilter: 'blur(5px)',
+          backgroundColor: index / 2 ? 'rgba(138, 200, 245, 0.3)' : 'rgba(226, 138, 44, 0.39)',
+        }}
+      >
         <TaskInformation>
           <p>{item.Task}</p>
           <div className="secondary-details">
@@ -57,7 +66,7 @@ const TaskCard = ({ item, index }) => (
             </p>
           </div>
         </TaskInformation>
-      </div>
+      </Card>
     )}
   </Draggable>
 );

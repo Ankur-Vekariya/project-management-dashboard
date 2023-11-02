@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -12,7 +13,7 @@ import TablePagination from '@mui/material/TablePagination';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { users } from 'src/_mock/user';
+// import { users } from 'src/_mock/user';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -40,6 +41,8 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  const [users, setUsers] = useState([]);
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -47,6 +50,22 @@ export default function UserPage() {
       setOrderBy(id);
     }
   };
+
+  const getUsers = () => {
+    axios
+      .get('http://localhost:4000/users')
+      .then((response) => {
+        console.log(response);
+        setUsers(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -141,21 +160,21 @@ export default function UserPage() {
                 ]}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => (
-                    <UserTableRow
-                      key={row.id}
-                      name={row.name}
-                      role={row.role}
-                      status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
-                      selected={selected.indexOf(row.name) !== -1}
-                      handleClick={(event) => handleClick(event, row.name)}
-                    />
-                  ))}
+                {/* {dataFiltered
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
+                {users.map((row) => (
+                  <UserTableRow
+                    key={row.id}
+                    name={row.userName}
+                    role={row.role}
+                    status={row.status}
+                    company={row.email}
+                    avatarUrl={row.avatarUrl}
+                    isVerified={row.isVerified}
+                    selected={selected.indexOf(row.name) !== -1}
+                    handleClick={(event) => handleClick(event, row.name)}
+                  />
+                ))}
 
                 <TableEmptyRows
                   height={77}
