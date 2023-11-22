@@ -23,7 +23,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function LoginView() {
+export default function RegisterView() {
   const theme = useTheme();
 
   const router = useRouter();
@@ -121,12 +121,12 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4">Sign in to Minimal</Typography>
+          <Typography variant="h4">Sign up to Minimal</Typography>
 
           <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-            Don’t have an account?
-            <Link href="register" variant="subtitle2" sx={{ ml: 0.5 }}>
-              Get started
+            Already have an account?
+            <Link href="login" variant="subtitle2" sx={{ ml: 0.5 }}>
+              Login
             </Link>
           </Typography>
 

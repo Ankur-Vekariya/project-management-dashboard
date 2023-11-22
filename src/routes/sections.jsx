@@ -6,6 +6,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 
 import EditUser from 'src/sections/user/view/edit-user';
 import EditProjects from 'src/sections/projects/view/edit-projects';
+// import RegisterPage from 'src/pages/register';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -14,6 +15,7 @@ export const LoginPage = lazy(() => import('src/pages/login'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const Tasks = lazy(() => import('src/pages/tasks'));
+export const RegisterPage = lazy(() => import('src/pages/register'));
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +43,10 @@ export default function Router() {
     {
       path: 'login',
       element: <LoginPage />,
+    },
+    {
+      path: 'register',
+      element: <RegisterPage />,
     },
     {
       path: '404',
