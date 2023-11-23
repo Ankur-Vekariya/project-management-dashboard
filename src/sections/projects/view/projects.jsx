@@ -9,8 +9,12 @@ import {
   Box,
   Grid,
   Stack,
+  Modal,
+  Select,
   Button,
   Avatar,
+  MenuItem,
+  TextField,
   Container,
   Typography,
   AvatarGroup,
@@ -21,8 +25,41 @@ import { useRouter } from 'src/routes/hooks';
 
 import Iconify from 'src/components/iconify';
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  borderRadius: 3,
+  pt: 2,
+  px: 4,
+  pb: 3,
+  minWidth: 800,
+};
+
 export default function ProjectsView() {
   const [projects, setProjects] = useState([]);
+  const [managers, setManagers] = React.useState([]);
+
+  const [open, setOpen] = React.useState(false);
+  const [selectedManager, setSelectedManager] = React.useState('Role');
+  const [projectData, setProjectData] = React.useState({
+    projectName: '',
+    description: '',
+    technology: '',
+  });
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleChange = (event) => {
+    setSelectedManager(event.target.value);
+  };
+
   const getProjects = () => {
     axios
       .get('http://localhost:4000/projects')
@@ -34,7 +71,21 @@ export default function ProjectsView() {
         console.log(error);
       });
   };
+  const getManagers = () => {
+    axios
+      .get('http://localhost:4000/users/all/manager')
+      .then((response) => {
+        console.log(response);
+        setManagers(response?.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
+  useEffect(() => {
+    getManagers();
+  }, []);
   useEffect(() => {
     getProjects();
   }, []);
@@ -49,7 +100,8 @@ export default function ProjectsView() {
           color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={() => {
-            router.push('/edit/project');
+            handleOpen();
+            // router.push('/edit/project');
           }}
         >
           New Projects
@@ -106,6 +158,83 @@ export default function ProjectsView() {
           ))}
         </Grid>
       </Box>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="child-modal-title"
+        aria-describedby="child-modal-description"
+      >
+        <Box sx={{ ...style }}>
+          <Typography variant="h4">Create Project</Typography>
+          <Box
+            sx={{
+              py: 2,
+              px: 2.5,
+              borderRadius: 1.5,
+              bgcolor: (theme) => alpha(theme.palette.grey[600], 0.12),
+            }}
+          >
+            <Box
+              sx={{
+                minWidth: 120,
+              }}
+            >
+              <TextField
+                sx={{ minWidth: 300, my: 2, mx: 2 }}
+                id="outlined-basic"
+                label="Project Name"
+                variant="outlined"
+                onChange={(e) => {
+                  setProjectData({ ...projectData, projectName: e.target.value });
+                }}
+              />
+              <TextField
+                sx={{ minWidth: 300, my: 2, mx: 2 }}
+                id="outlined-basic"
+                label="Description"
+                variant="outlined"
+                onChange={(e) => {
+                  setProjectData({ ...projectData, description: e.target.value });
+                }}
+              />
+            </Box>
+            <Box sx={{ minWidth: 120 }}>
+              <TextField
+                sx={{ minWidth: 300, my: 2, mx: 2 }}
+                id="outlined-basic"
+                label="Password"
+                variant="outlined"
+                onChange={(e) => {
+                  setProjectData({ ...projectData, technology: e.target.value });
+                }}
+              />
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selectedManager}
+                label="Manager"
+                onChange={handleChange}
+                sx={{ minWidth: 300, my: 2, mx: 2 }}
+              >
+                {managers.map((item, index) => (
+                  <MenuItem value={item?._id}>{item.userName}</MenuItem>
+                ))}
+              </Select>
+            </Box>
+            <Button
+              variant="contained"
+              color="inherit"
+              // startIcon={<Iconify icon="eva:plus-fill" />}
+              onClick={() => {
+                // createProject();
+              }}
+              sx={{ minWidth: 300, my: 2, mx: 2 }}
+            >
+              Add User
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Container>
   );
 }
