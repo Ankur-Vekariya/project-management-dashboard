@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
@@ -20,8 +21,6 @@ import {
   AvatarGroup,
   CardActionArea,
 } from '@mui/material';
-
-import { useRouter } from 'src/routes/hooks';
 
 import Iconify from 'src/components/iconify';
 
@@ -89,7 +88,7 @@ export default function ProjectsView() {
   useEffect(() => {
     getProjects();
   }, []);
-  const router = useRouter();
+  const navigate = useNavigate();
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -122,7 +121,7 @@ export default function ProjectsView() {
               <Card sx={{ minWidth: 100, boxShadow: 20 }} key={index}>
                 <CardActionArea
                   onClick={() => {
-                    router.push('/project-detail');
+                    navigate('/project-detail', { state: { projectId: item._id } });
                   }}
                 >
                   <CardContent>

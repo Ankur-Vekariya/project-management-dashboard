@@ -1,9 +1,12 @@
-import React from 'react';
+import { useLocation } from 'react-router-dom';
+import React, { useState,useEffect } from 'react';
 
 import { alpha } from '@mui/material/styles';
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 // import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import axios from 'axios';
+
 import {
   Box,
   Grid,
@@ -26,7 +29,31 @@ import {
 
 import Iconify from 'src/components/iconify';
 
-export default function ProjectsDetailView() {
+import AppWidgetSummary from '../../overview/app-widget-summary';
+
+export default function ProjectsDetailView(props) {
+  const data = useLocation();
+
+  const [projectDetail, setProjectDetail] = useState([]);
+
+  const getProjectDetail = () => {
+    axios
+      .get(`http://localhost:4000/projects/project-details/${data.state.projectId}`)
+      .then((response) => {
+        console.log(response);
+        setProjectDetail(response?.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    getProjectDetail();
+  }, []);
+
+  console.log('data-------', data);
+
   function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
   }
@@ -238,7 +265,23 @@ export default function ProjectsDetailView() {
               </LocalizationProvider>
             </Box>
           </Grid> */}
+          {projectDetail.map((item, index) => (
+            <>
+              {item.sprints.map((sprints, i) => (
+                <Grid item xs={12} sm={6} md={3} key={index}>
+                  <AppWidgetSummary
+                    key={i}
+                    title={sprints.sprintsName}
+                    total={1352831}
+                    color="info"
+                    icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
+                  />
+                </Grid>
+              ))}
+            </>
+          ))}
         </Grid>
+
         {/* <Button variant="contained" color="inherit" sx={{ minWidth: 300, my: 2, mx: 2 }}>
           Add User
         </Button> */}

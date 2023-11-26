@@ -1,8 +1,9 @@
 import { Helmet } from 'react-helmet-async';
 
-import ProjectsDetailView from 'src/sections/project-detail/project-detail';
+import ProjectsDetailView from 'src/sections/projects/view/project-detail';
 
 export default function ProjectDetailPage() {
+  
   return (
     <>
       <Helmet>
