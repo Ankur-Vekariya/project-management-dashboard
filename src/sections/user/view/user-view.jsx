@@ -53,7 +53,7 @@ export default function UserPage() {
 
   const getUsers = () => {
     axios
-      .get('http://localhost:4000/users')
+      .get('http://localhost:5000/users')
       .then((response) => {
         console.log(response);
         setUsers(response.data);

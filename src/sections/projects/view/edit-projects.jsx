@@ -28,23 +28,6 @@ export default function EditProjects() {
 
   console.log('projectData-------------', projectData);
 
-  const createProject = () => {
-    axios
-      .post('http://localhost:4000/projects/create-project', {
-        projectName: projectData.projectName,
-        description: projectData.description,
-        technology: projectData.technology,
-        createdBy: '653cd9b18fb2ee68155e15e9',
-        assignedTo: selectedManager,
-      })
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const getManagers = () => {
     axios
       .get('http://localhost:4000/users/all/manager')
@@ -126,11 +109,11 @@ export default function EditProjects() {
           color="inherit"
           // startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={() => {
-            createProject();
+            // createProject();
           }}
           sx={{ minWidth: 300, my: 2, mx: 2 }}
         >
-          Add User
+          Add Project
         </Button>
       </Box>
     </Container>

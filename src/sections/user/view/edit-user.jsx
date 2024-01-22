@@ -35,14 +35,15 @@ export default function EditUser() {
 
   const createUser = () => {
     axios
-      .post('http://localhost:4000/users/create-user', {
+      .post('http://localhost:5000/users/create-user', {
         userName: userData.userName,
         email: userData.email,
         password: userData.password,
         role: selectedRole,
       })
       .then((response) => {
-        console.log(response);
+        console.log('register successfully====', response);
+        localStorage.setItem('token', JSON.stringify(response?.data?.token));
       })
       .catch((error) => {
         console.log(error);

@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { alpha } from '@mui/material/styles';
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -35,13 +35,33 @@ export default function ProjectsDetailView(props) {
   const data = useLocation();
 
   const [projectDetail, setProjectDetail] = useState([]);
+  const [sprintsList, setSprintsList] = useState([]);
+
+  const getSprints = (arr) => {
+    const arr1 = arr.map((item) => item?.sprints);
+    axios
+      .post(`http://localhost:5000/sprints/sprints`, {
+        sprints: arr1[0],
+      })
+      .then((response) => {
+        console.log('respponse sprints', response);
+        setSprintsList(response?.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const getProjectDetail = () => {
+    const token = localStorage.getItem('token');
     axios
-      .get(`http://localhost:4000/projects/project-details/${data.state.projectId}`)
+      .get(`http://localhost:5000/projects/project-details/${data.state.projectId}`, {
+        headers: { Authorization: `${JSON.parse(token)}` },
+      })
       .then((response) => {
-        console.log(response);
+        console.log('response==========', response);
         setProjectDetail(response?.data);
+        getSprints(response?.data);
       })
       .catch((error) => {
         console.log(error);
@@ -51,8 +71,6 @@ export default function ProjectsDetailView(props) {
   useEffect(() => {
     getProjectDetail();
   }, []);
-
-  console.log('data-------', data);
 
   function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
@@ -265,14 +283,14 @@ export default function ProjectsDetailView(props) {
               </LocalizationProvider>
             </Box>
           </Grid> */}
-          {projectDetail.map((item, index) => (
+          {projectDetail?.map((item, index) => (
             <>
-              {item.sprints.map((sprints, i) => (
+              {sprintsList.map((sprints, i) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <AppWidgetSummary
                     key={i}
-                    title={sprints.sprintsName}
-                    total={1352831}
+                    title={sprints.sprintName}
+                    // total={sprints?.description}
                     color="info"
                     icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
                   />

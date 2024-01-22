@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
@@ -29,14 +30,36 @@ export default function RegisterView() {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [age, setAge] = useState('');
+  const [selectedRole, setSelectedRole] = useState('Role');
+  const [userData, setUserData] = useState({
+    userName: '',
+    email: '',
+    password: '',
+  });
 
   const handleChange = (event) => {
-    setAge(event.target.value);
+    setSelectedRole(event.target.value);
+  };
+  const handleClick = () => {
+    createUser();
   };
 
-  const handleClick = () => {
-    router.push('/dashboard');
+  const createUser = () => {
+    axios
+      .post('http://localhost:5000/users/create-user', {
+        userName: userData.userName,
+        email: userData.email,
+        password: userData.password,
+        role: selectedRole,
+      })
+      .then((response) => {
+        console.log('register successfully====', response);
+        localStorage.setItem('token', JSON.stringify(response?.data?.token));
+        router.push('/');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const renderForm = (
@@ -44,11 +67,11 @@ export default function RegisterView() {
       <Stack spacing={3}>
         <Box sx={{ minWidth: 120 }}>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+            <InputLabel id="demo-simple-select-label">Role</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={age}
+              value={selectedRole}
               label="Age"
               onChange={handleChange}
             >
@@ -58,7 +81,21 @@ export default function RegisterView() {
             </Select>
           </FormControl>
         </Box>
-        <TextField name="email" label="Email address" />
+        <TextField
+          name="text"
+          label="User Name"
+          onChange={(e) => {
+            setUserData({ ...userData, userName: e.target.value });
+          }}
+        />
+
+        <TextField
+          name="email"
+          label="Email address"
+          onChange={(e) => {
+            setUserData({ ...userData, email: e.target.value });
+          }}
+        />
 
         <TextField
           name="password"
@@ -72,6 +109,9 @@ export default function RegisterView() {
                 </IconButton>
               </InputAdornment>
             ),
+          }}
+          onChange={(e) => {
+            setUserData({ ...userData, password: e.target.value });
           }}
         />
       </Stack>

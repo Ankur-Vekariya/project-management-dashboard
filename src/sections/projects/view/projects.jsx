@@ -60,8 +60,11 @@ export default function ProjectsView() {
   };
 
   const getProjects = () => {
+    const token = localStorage.getItem('token');
     axios
-      .get('http://localhost:4000/projects')
+      .get('http://localhost:5000/projects', {
+        headers: { Authorization: `${JSON.parse(token)}` },
+      })
       .then((response) => {
         console.log(response);
         setProjects(response?.data);
@@ -72,7 +75,7 @@ export default function ProjectsView() {
   };
   const getManagers = () => {
     axios
-      .get('http://localhost:4000/users/all/manager')
+      .get('http://localhost:5000/users/all/manager')
       .then((response) => {
         console.log(response);
         setManagers(response?.data);
@@ -82,10 +85,31 @@ export default function ProjectsView() {
       });
   };
 
+  const createProject = () => {
+    const token = localStorage.getItem('token');
+    axios
+      .post(
+        'http://localhost:5000/projects/create-project',
+        {
+          projectName: projectData.projectName,
+          description: projectData.description,
+          technology: projectData.technology,
+          createdBy: '653cd9b18fb2ee68155e15e9',
+          assignedTo: selectedManager,
+        },
+        { headers: { Authorization: `${JSON.parse(token)}` } }
+      )
+      .then((response) => {
+        handleClose();
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     getManagers();
-  }, []);
-  useEffect(() => {
     getProjects();
   }, []);
   const navigate = useNavigate();
@@ -223,13 +247,13 @@ export default function ProjectsView() {
             <Button
               variant="contained"
               color="inherit"
-              // startIcon={<Iconify icon="eva:plus-fill" />}
+              startIcon={<Iconify icon="eva:plus-fill" />}
               onClick={() => {
-                // createProject();
+                createProject();
               }}
               sx={{ minWidth: 300, my: 2, mx: 2 }}
             >
-              Add User
+              Add Project
             </Button>
           </Box>
         </Box>
