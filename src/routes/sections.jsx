@@ -18,7 +18,15 @@ export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProjectDetailPage = lazy(() => import('src/pages/project-detail'));
 
 // ----------------------------------------------------------------------
+const PrivateRoute = ({ component }) => {
+  const token = JSON.parse(localStorage.getItem('token'));
 
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return component;
+};
 export default function Router() {
   const routes = useRoutes([
     {
@@ -30,8 +38,8 @@ export default function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <IndexPage />, index: true },
-        { path: 'user', element: <UserPage /> },
+        { path: 'dashboard', element: <PrivateRoute component={<IndexPage />} /> },
+        { path: 'user', element: <PrivateRoute component=<UserPage /> /> },
         { path: 'edit/user', element: <EditUser /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
@@ -42,8 +50,9 @@ export default function Router() {
       ],
     },
     {
-      path: 'login',
+      path: '/',
       element: <LoginPage />,
+      index: true,
     },
     {
       path: 'register',

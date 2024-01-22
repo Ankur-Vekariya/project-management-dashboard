@@ -38,13 +38,20 @@ export default function ProjectsDetailView(props) {
   const [sprintsList, setSprintsList] = useState([]);
 
   const getSprints = (arr) => {
+    const token = localStorage.getItem('token');
     const arr1 = arr.map((item) => item?.sprints);
     axios
-      .post(`http://localhost:5000/sprints/sprints`, {
-        sprints: arr1[0],
-      })
+      .post(
+        `http://localhost:5000/sprints/sprints`,
+        {
+          sprints: arr1[0],
+        },
+        {
+          headers: { Authorization: `${JSON.parse(token)}` },
+        }
+      )
       .then((response) => {
-        console.log('respponse sprints', response);
+        console.log('response sprints', response);
         setSprintsList(response?.data);
       })
       .catch((error) => {

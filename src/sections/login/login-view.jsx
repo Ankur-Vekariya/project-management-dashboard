@@ -56,7 +56,7 @@ export default function LoginView() {
       .then((response) => {
         console.log('register successfully====', response);
         localStorage.setItem('token', JSON.stringify(response?.data?.token));
-        router.push('/');
+        router.push('/dashboard');
       })
       .catch((error) => {
         console.log(error);
