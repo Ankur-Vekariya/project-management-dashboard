@@ -1,20 +1,18 @@
+import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
 import { alpha } from '@mui/material/styles';
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-// import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import axios from 'axios';
-
 import {
   Box,
   Grid,
   Card,
   Chip,
   Stack,
+  Modal,
   Button,
   Avatar,
+  TextField,
   Container,
   Typography,
   CardContent,
@@ -22,13 +20,28 @@ import {
 
 import Iconify from 'src/components/iconify';
 
-// import AppWidgetSummary from '../../overview/app-widget-summary';
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  borderRadius: 3,
+  pt: 2,
+  px: 4,
+  pb: 3,
+  minWidth: 800,
+};
 
 export default function ProjectsDetailView(props) {
   const data = useLocation();
 
   const [projectDetail, setProjectDetail] = useState([]);
   const [sprintsList, setSprintsList] = useState([]);
+  const [comment, setComment] = useState('');
+  const [open, setOpen] = React.useState(false);
+  const [commentsList, setCommentssList] = useState([]);
 
   const getSprints = (arr) => {
     const token = localStorage.getItem('token');
@@ -68,33 +81,53 @@ export default function ProjectsDetailView(props) {
         console.log(error);
       });
   };
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const createComment = () => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+
+    const body = {
+      comment,
+      projectId: data.state.projectId,
+      userId: userData?._id,
+    };
+    axios
+      .post(`http://localhost:5000/comments/create-comment`, body, {
+        headers: { Authorization: `${userData?.token}` },
+      })
+      .then((response) => {
+        console.log('response==========', response);
+        handleClose();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getProjectComment = () => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    console.log('userData', userData);
+    axios
+      .get(`http://localhost:5000/comments/by-project/${data.state.projectId}`, {
+        headers: { Authorization: `${userData?.token}` },
+      })
+      .then((response) => {
+        console.log('response==========', response);
+        setCommentssList(response?.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     getProjectDetail();
+    getProjectComment();
   }, []);
-
-  // function createData(name, calories, fat, carbs, protein) {
-  //   return { name, calories, fat, carbs, protein };
-  // }
-
-  // const rows = [
-  //   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  //   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  //   createData('Eclair', 262, 16.0, 24, 6.0),
-  //   createData('Cupcake', 305, 3.7, 67, 4.3),
-  //   // createData('Gingerbread', 356, 16.0, 49, 3.9),
-  // ];
-
-  const commentData = [
-    { comment: 'yuuu erte wew vbhg fjrh' },
-    { comment: 'asdfgh fjrh' },
-    { comment: 'asdfgh vbhg fjrh we' },
-    { comment: 'asdfgh vbhg fjrh' },
-    { comment: 'yuuu erte wew vbhg fjrh' },
-    { comment: 'asdfgh fjrh' },
-    { comment: 'asdfgh vbhg fjrh' },
-    { comment: 'asdfgh vbhg fjrh we' },
-  ];
 
   function getRandomColor() {
     const letters = '0123456789ABCDEF';
@@ -108,18 +141,18 @@ export default function ProjectsDetailView(props) {
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Projects</Typography>
+        <Typography variant="h4">Project details</Typography>
 
         <Button
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={() => {
-            // handleOpen();
+            handleOpen();
             // router.push('/edit/project');
           }}
         >
-          New Projects
+          New Comment
         </Button>
       </Stack>
       <Box
@@ -131,13 +164,6 @@ export default function ProjectsDetailView(props) {
         }}
       >
         <Grid container spacing={2}>
-          {/* <Grid item xs={4}>
-            <Box sx={{ py: 1, px: 1, borderRadius: 2, backgroundColor: '#fff', minHeight: 350 }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar sx={{ height: 350 }} />
-              </LocalizationProvider>
-            </Box>
-          </Grid> */}
           <Grid item xs={4}>
             <Box sx={{ py: 2, px: 2, borderRadius: 2, backgroundColor: '#fff', height: 350 }}>
               <Typography variant="h5">Team</Typography>
@@ -260,7 +286,7 @@ export default function ProjectsDetailView(props) {
           <Grid item xs={8}>
             <Box sx={{ py: 1, px: 1, borderRadius: 2, backgroundColor: '#fff', minHeight: 350 }}>
               <Typography variant="h5">Comments</Typography>
-              {commentData?.map((item, index) => (
+              {commentsList?.map((item, index) => (
                 <Chip
                   key={index}
                   avatar={<Avatar alt="Natacha" src="/static/images/avatar/1.jpg" />}
@@ -275,51 +301,8 @@ export default function ProjectsDetailView(props) {
                   ]}
                 />
               ))}
-              {/* <TableContainer>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Dessert (100g serving)</TableCell>
-                      <TableCell align="right">Calories</TableCell>
-                      <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                      <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                      <TableCell align="right">Protein&nbsp;(g)</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <TableRow
-                        key={row.name}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {row.name}
-                        </TableCell>
-                        <TableCell align="right">{row.calories}</TableCell>
-                        <TableCell align="right">{row.fat}</TableCell>
-                        <TableCell align="right">{row.carbs}</TableCell>
-                        <TableCell align="right">{row.protein}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer> */}
             </Box>
           </Grid>
-          {/* <Grid item xs={4}>
-            <Box sx={{ py: 1, px: 1, borderRadius: 2, backgroundColor: '#fff', minHeight: 350 }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar sx={{ height: 350 }} />
-              </LocalizationProvider>
-            </Box>
-          </Grid>
-          <Grid item xs={4}>
-            <Box sx={{ py: 1, px: 1, borderRadius: 2, backgroundColor: '#fff', height: 350 }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar sx={{ height: 350 }} />
-              </LocalizationProvider>
-            </Box>
-          </Grid> */}
           {projectDetail?.map((item, index) => (
             <>
               {sprintsList.map((sprints, i) => (
@@ -332,15 +315,9 @@ export default function ProjectsDetailView(props) {
                       px: 3,
                       py: 3,
                       borderRadius: 2,
-                      // ...sx,
                     }}
-                    // {...other}
                   >
-                    {/* {icon && <Box sx={{ width: 64, height: 64 }}>{icon}</Box>} */}
-
                     <Stack spacing={0.5}>
-                      {/* <Typography variant="h4">{fShortenNumber(total)}</Typography> */}
-
                       <Typography variant="h6">{sprints.sprintName}</Typography>
                       <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
                         {sprints.description}
@@ -350,26 +327,58 @@ export default function ProjectsDetailView(props) {
                       </Typography>
                     </Stack>
                   </Card>
-                  {/* <AppWidgetSummary
-                    key={i}
-                    title={sprints.sprintName}
-                    title={sprints.sprintName}
-                    title={sprints.sprintName}
-
-                    // total={sprints?.description}
-                    color="info"
-                    icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
-                  /> */}
                 </Grid>
               ))}
             </>
           ))}
         </Grid>
-
-        {/* <Button variant="contained" color="inherit" sx={{ minWidth: 300, my: 2, mx: 2 }}>
-          Add User
-        </Button> */}
       </Box>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="child-modal-title"
+        aria-describedby="child-modal-description"
+      >
+        <Box sx={{ ...style }}>
+          <Typography variant="h4">Create Project</Typography>
+          <Box
+            sx={{
+              py: 2,
+              px: 2.5,
+              borderRadius: 1.5,
+              bgcolor: (theme) => alpha(theme.palette.grey[600], 0.12),
+            }}
+          >
+            <Box
+              sx={{
+                minWidth: 120,
+              }}
+            >
+              <TextField
+                sx={{ minWidth: 300, my: 2, mx: 2 }}
+                id="outlined-basic"
+                label="comment"
+                variant="outlined"
+                onChange={(e) => {
+                  setComment(e.target.value);
+                }}
+              />
+            </Box>
+
+            <Button
+              variant="contained"
+              color="inherit"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              onClick={() => {
+                createComment();
+              }}
+              sx={{ minWidth: 300, my: 2, mx: 2 }}
+            >
+              Add Comment
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Container>
   );
 }

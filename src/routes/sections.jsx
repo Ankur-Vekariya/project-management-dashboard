@@ -44,9 +44,12 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'tasks', element: <Tasks /> },
-        { path: 'projects', element: <ProjectsPage /> },
+        {
+          path: 'projects',
+          element: <ProjectsPage />,
+        },
         { path: 'edit/project', element: <EditProjects /> },
-        { path: 'project-detail', element: <ProjectDetailPage /> },
+        { path: 'projects/project-detail', element: <ProjectDetailPage /> },
       ],
     },
     {

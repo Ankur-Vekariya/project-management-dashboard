@@ -41,7 +41,6 @@ const style = {
 export default function ProjectsView() {
   const [projects, setProjects] = useState([]);
   const [managers, setManagers] = React.useState([]);
-
   const [open, setOpen] = React.useState(false);
   const [selectedManager, setSelectedManager] = React.useState('Role');
   const [projectData, setProjectData] = React.useState({
@@ -145,7 +144,7 @@ export default function ProjectsView() {
               <Card sx={{ minWidth: 100, boxShadow: 20 }} key={index}>
                 <CardActionArea
                   onClick={() => {
-                    navigate('/project-detail', { state: { projectId: item._id } });
+                    navigate('/projects/project-detail', { state: { projectId: item._id } });
                   }}
                 >
                   <CardContent>
