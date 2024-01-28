@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -17,6 +18,7 @@ import { Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
 
+import {user} from 'src/redux/userSlice';
 import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
@@ -26,6 +28,10 @@ import Iconify from 'src/components/iconify';
 
 export default function LoginView() {
   const theme = useTheme();
+  const reduxUser = useSelector((state) => state.userSlice.user);
+  const dispatch = useDispatch();
+
+  console.log('reduxUser', reduxUser);
 
   const router = useRouter();
 
@@ -55,11 +61,12 @@ export default function LoginView() {
       })
       .then((response) => {
         console.log('register successfully====', response);
+        dispatch(user(response?.data));
         localStorage.setItem('user', JSON.stringify(response?.data));
         router.push('/dashboard');
       })
       .catch((error) => {
-        console.log(error);
+        console.log('error', error);
       });
   };
 

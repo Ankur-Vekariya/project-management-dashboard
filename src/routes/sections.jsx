@@ -19,9 +19,9 @@ export const ProjectDetailPage = lazy(() => import('src/pages/project-detail'));
 
 // ----------------------------------------------------------------------
 const PrivateRoute = ({ component }) => {
-  const token = JSON.parse(localStorage.getItem('token'));
+  const user = JSON.parse(localStorage.getItem('user'));
 
-  if (!token) {
+  if (!user?.token) {
     return <Navigate to="/login" replace />;
   }
 
