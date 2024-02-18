@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -18,7 +18,7 @@ import { Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
 
-import {user} from 'src/redux/userSlice';
+import { user } from 'src/redux/userSlice';
 import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
@@ -28,10 +28,8 @@ import Iconify from 'src/components/iconify';
 
 export default function LoginView() {
   const theme = useTheme();
-  const reduxUser = useSelector((state) => state.userSlice.user);
+  // const reduxUser = useSelector((state) => state.userSlice.user);
   const dispatch = useDispatch();
-
-  console.log('reduxUser', reduxUser);
 
   const router = useRouter();
 

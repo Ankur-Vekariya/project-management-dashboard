@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
@@ -35,6 +36,7 @@ const style = {
 };
 
 export default function ProjectsDetailView(props) {
+  const reduxUser = useSelector((state) => state.userSlice.user);
   const data = useLocation();
 
   const [projectDetail, setProjectDetail] = useState([]);
@@ -44,7 +46,7 @@ export default function ProjectsDetailView(props) {
   const [commentsList, setCommentssList] = useState([]);
 
   const getSprints = (arr) => {
-    const token = localStorage.getItem('token');
+    // const token = localStorage.getItem('token');
     const arr1 = arr.map((item) => item?.sprints);
     console.log('arr1', arr1);
     axios
@@ -54,7 +56,7 @@ export default function ProjectsDetailView(props) {
           sprints: arr1[0],
         },
         {
-          headers: { Authorization: `${JSON.parse(token)}` },
+          headers: { Authorization: `${reduxUser?.user?.token}` },
         }
       )
       .then((response) => {
@@ -67,10 +69,9 @@ export default function ProjectsDetailView(props) {
   };
 
   const getProjectDetail = () => {
-    const token = localStorage.getItem('token');
     axios
       .get(`http://localhost:5000/projects/project-details/${data.state.projectId}`, {
-        headers: { Authorization: `${JSON.parse(token)}` },
+        headers: { Authorization: `${reduxUser?.user?.token}` },
       })
       .then((response) => {
         console.log('response==========', response);
@@ -129,15 +130,15 @@ export default function ProjectsDetailView(props) {
     getProjectComment();
   }, []);
 
-  function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i += i + 1) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    console.log(color);
-    return color;
-  }
+  // function getRandomColor() {
+  //   const letters = '0123456789ABCDEF';
+  //   let color = '#';
+  //   for (let i = 0; i < 6; i += i + 1) {
+  //     color += letters[Math.floor(Math.random() * 16)];
+  //   }
+  //   console.log(color);
+  //   return color;
+  // }
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -257,7 +258,7 @@ export default function ProjectsDetailView(props) {
                     sx={{
                       minWidth: 150,
                       // maxHeight: 150,
-                      backgroundColor: '#dcf0fa',
+                      // backgroundColor: '#dcf0fa',
                     }}
                   >
                     <CardContent
@@ -297,7 +298,7 @@ export default function ProjectsDetailView(props) {
                   }}
                   sx={[
                     { height: '40px', margin: '5px', borderRadius: '25px' },
-                    { backgroundColor: getRandomColor() },
+                    { backgroundColor: '#dcf0fa' },
                   ]}
                 />
               ))}

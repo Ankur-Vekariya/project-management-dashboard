@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
@@ -39,6 +40,7 @@ const style = {
 };
 
 export default function ProjectsView() {
+  const reduxUser = useSelector((state) => state.userSlice.user);
   const [projects, setProjects] = useState([]);
   const [managers, setManagers] = React.useState([]);
   const [open, setOpen] = React.useState(false);
@@ -59,10 +61,9 @@ export default function ProjectsView() {
   };
 
   const getProjects = () => {
-    const token = localStorage.getItem('token');
     axios
       .get('http://localhost:5000/projects', {
-        headers: { Authorization: `${JSON.parse(token)}` },
+        headers: { Authorization: `${reduxUser?.user?.token}` },
       })
       .then((response) => {
         console.log(response);
