@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { useSelector } from 'react-redux';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import ProjectsPage from 'src/pages/projects';
@@ -19,10 +20,13 @@ export const ProjectDetailPage = lazy(() => import('src/pages/project-detail'));
 
 // ----------------------------------------------------------------------
 const PrivateRoute = ({ component }) => {
-  const user = JSON.parse(localStorage.getItem('user'));
+  const reduxUser = useSelector((state) => state.userSlice.user);
+  // const user = JSON.parse(localStorage.getItem('user'));
 
-  if (!user?.token) {
-    return <Navigate to="/login" replace />;
+  console.log('!reduxUser?.user?.token', reduxUser?.user?.token);
+
+  if (!reduxUser?.user?.token) {
+    return <Navigate to="/" replace />;
   }
 
   return component;

@@ -37,8 +37,8 @@ export default function LoginView() {
   const [selectedRole, setSelectedRole] = useState('Role');
   const [userData, setUserData] = useState({
     userName: '',
-    email: '',
-    password: '',
+    email: 'acv@gmail.com',
+    password: 'test@123',
   });
 
   const handleChange = (event) => {
@@ -51,8 +51,8 @@ export default function LoginView() {
 
   const userLogin = () => {
     axios
-      .post('http://localhost:5000/users/create-user', {
-        userName: userData.userName,
+      .post('http://localhost:5000/users/login', {
+        // userName: userData.userName,
         email: userData.email,
         password: userData.password,
         role: selectedRole,
@@ -60,8 +60,8 @@ export default function LoginView() {
       .then((response) => {
         console.log('register successfully====', response);
         dispatch(user(response?.data));
-        localStorage.setItem('user', JSON.stringify(response?.data));
         router.push('/dashboard');
+        // localStorage.setItem('user', JSON.stringify(response?.data));
       })
       .catch((error) => {
         console.log('error', error);
@@ -159,7 +159,7 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4">Sign in to Minimal</Typography>
+          <Typography variant="h4">Log in to PMS</Typography>
 
           <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
             Don’t have an account?

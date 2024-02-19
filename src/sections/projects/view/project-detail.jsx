@@ -10,30 +10,15 @@ import {
   Card,
   Chip,
   Stack,
-  Modal,
   Button,
   Avatar,
-  TextField,
   Container,
   Typography,
   CardContent,
 } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  borderRadius: 3,
-  pt: 2,
-  px: 4,
-  pb: 3,
-  minWidth: 800,
-};
+import CommentModel from 'src/components/comment-model';
 
 export default function ProjectsDetailView(props) {
   const reduxUser = useSelector((state) => state.userSlice.user);
@@ -85,24 +70,24 @@ export default function ProjectsDetailView(props) {
   const handleOpen = () => {
     setOpen(true);
   };
-  const handleClose = () => {
-    setOpen(false);
-  };
+  // const handleClose = () => {
+  //   setOpen(false);
+  // };
   const createComment = () => {
-    const userData = JSON.parse(localStorage.getItem('user'));
+    // const userData = JSON.parse(localStorage.getItem('user'));
 
     const body = {
       comment,
       projectId: data.state.projectId,
-      userId: userData?._id,
+      userId: reduxUser?.user?._id,
     };
     axios
       .post(`http://localhost:5000/comments/create-comment`, body, {
-        headers: { Authorization: `${userData?.token}` },
+        headers: { Authorization: `${reduxUser?.user?.token}` },
       })
       .then((response) => {
         console.log('response==========', response);
-        handleClose();
+        setOpen(false);
       })
       .catch((error) => {
         console.log(error);
@@ -110,11 +95,11 @@ export default function ProjectsDetailView(props) {
   };
 
   const getProjectComment = () => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    console.log('userData', userData);
+    // const userData = JSON.parse(localStorage.getItem('user'));
+    // console.log('userData', userData);
     axios
       .get(`http://localhost:5000/comments/by-project/${data.state.projectId}`, {
-        headers: { Authorization: `${userData?.token}` },
+        headers: { Authorization: `${reduxUser?.user?.token}` },
       })
       .then((response) => {
         console.log('response==========', response);
@@ -144,17 +129,31 @@ export default function ProjectsDetailView(props) {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Project details</Typography>
 
-        <Button
-          variant="contained"
-          color="inherit"
-          startIcon={<Iconify icon="eva:plus-fill" />}
-          onClick={() => {
-            handleOpen();
-            // router.push('/edit/project');
-          }}
-        >
-          New Comment
-        </Button>
+        <Box>
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => {
+              handleOpen();
+              // router.push('/edit/project');
+            }}
+          >
+            New Comment
+          </Button>
+          {reduxUser?.user?.role !== "Admin" && <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => {
+              handleOpen();
+              // router.push('/edit/project');
+            }}
+            sx={{ marginLeft: '10px' }}
+          >
+            New Sprint
+          </Button>}
+        </Box>
       </Stack>
       <Box
         sx={{
@@ -334,52 +333,18 @@ export default function ProjectsDetailView(props) {
           ))}
         </Grid>
       </Box>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="child-modal-title"
-        aria-describedby="child-modal-description"
-      >
-        <Box sx={{ ...style }}>
-          <Typography variant="h4">Create Project</Typography>
-          <Box
-            sx={{
-              py: 2,
-              px: 2.5,
-              borderRadius: 1.5,
-              bgcolor: (theme) => alpha(theme.palette.grey[600], 0.12),
-            }}
-          >
-            <Box
-              sx={{
-                minWidth: 120,
-              }}
-            >
-              <TextField
-                sx={{ minWidth: 300, my: 2, mx: 2 }}
-                id="outlined-basic"
-                label="comment"
-                variant="outlined"
-                onChange={(e) => {
-                  setComment(e.target.value);
-                }}
-              />
-            </Box>
-
-            <Button
-              variant="contained"
-              color="inherit"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              onClick={() => {
-                createComment();
-              }}
-              sx={{ minWidth: 300, my: 2, mx: 2 }}
-            >
-              Add Comment
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+      <CommentModel
+        createComment={() => {
+          createComment();
+        }}
+        isOpen={open}
+        handleClose={() => {
+          setOpen(false);
+        }}
+        setComment={(value) => {
+          setComment(value);
+        }}
+      />
     </Container>
   );
 }
